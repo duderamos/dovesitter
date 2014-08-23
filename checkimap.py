@@ -2,10 +2,8 @@ import threading
 import logging
 import logging.config
 import time
-import ssl
 import socket
 import director
-import imaplib
 import sys
 from struct import *
 import fcntl
