@@ -31,6 +31,7 @@ import director
 UMASK=0
 WORKDIR = '/'
 RUNNING = True
+PIDFILE = '/tmp/dovesitter.pid'
 
 logging.config.fileConfig('logging.conf')
 logger = logging.getLogger('dovesitter')
@@ -41,6 +42,16 @@ def sighandler(signum, frame):
                 logger.info('Signal term received')
                 RUNNING = False
 
+def writepid(pid):
+        if os.path.isfile(PIDFILE):
+                return False
+        try:
+                fp = open(PIDFILE, 'w')
+                fp.write(str(pid))
+        except IOError:
+                return False
+        return True
+
 def daemonize():
         try:
                 pid = os.fork()
@@ -48,6 +59,9 @@ def daemonize():
                 raise Exception, "%s [%d]" % (e.strerror, e.errno)
 
         if (pid == 0):
+                if not writepid(os.getpid()):
+                        print "Check if there is another dovesitter instance running! " + PIDFILE
+                        os._exit(1)
                 os.setsid()
                 os.chdir(WORKDIR)
                 os.umask(UMASK)
@@ -88,3 +102,4 @@ if __name__ == '__main__':
 			for t in threads:
 				t.kill_received = True
 	logger.info('Stopping...')
+	os.remove(PIDFILE)
