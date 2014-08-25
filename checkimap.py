@@ -9,27 +9,27 @@ from struct import *
 import fcntl
 
 class checkimap(threading.Thread):
-	def __init__(self):
+	def __init__(self, host_port, director):
 		threading.Thread.__init__(self)
 		self.kill_received = False
 		self.logger = logging.getLogger('dovesitter')
 		self.myip = socket.gethostbyname(socket.gethostname())
+		self.host_port = host_port
+		self.director = director
 
 	def run(self):
 		self.logger.info('CheckImap thread started')
-		dir = director.director()
-		dir.director_gethosts()
+		self.director.director_gethosts()
 		while not self.kill_received:
-			if not dir.proxies: self.kill_received = True
-			for i in dir.proxies.keys():
-				print 'check {}'.format(i)
+			if not self.director.proxies: self.kill_received = True
+			for i in self.director.proxies.keys():
 				result = self.proxy_test(i)
-				if result == True and dir.proxies[i] == '0':
+				if result == True and self.director.proxies[i] == '0':
 					self.logger.info('Server %s is ok.',i)
-					dir.director_enablehost(i)
-				elif result == False and dir.proxies[i] == '100':
+					self.director.director_enablehost(i)
+				elif result == False and self.director.proxies[i] == '100':
 					self.logger.warning('Server %s is not ok.',i)
-					dir.director_disablehost(i)
+					self.director.director_disablehost(i)
 			time.sleep(2)
 
 	def checksum(self, msg):
@@ -53,7 +53,7 @@ class checkimap(threading.Thread):
 		packet = '';
 		source_ip = self.myip
 		dest_ip = host
-		dest_port = 143
+		dest_port = int(self.host_port)
 		ihl = 5
 		version = 4
 		tos = 0

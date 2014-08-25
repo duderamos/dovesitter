@@ -19,6 +19,7 @@
 
 import logging
 import logging.config
+import ConfigParser
 import time
 import signal
 import threading
@@ -32,9 +33,13 @@ UMASK=0
 WORKDIR = '/'
 RUNNING = True
 PIDFILE = '/tmp/dovesitter.pid'
+CONFFILE = 'dovesitter.conf'
 
 logging.config.fileConfig('logging.conf')
 logger = logging.getLogger('dovesitter')
+
+config = ConfigParser.ConfigParser()
+config.read(CONFFILE)
 
 def sighandler(signum, frame):
         global RUNNING
@@ -84,8 +89,9 @@ if __name__ == '__main__':
         daemonize()
         signal.signal(signal.SIGTERM, sighandler)
 	logger.info('Starting dovesitter main thread')
+	director = director.director(config.get('general', 'director_socket'))
 	threads = []
-	t = checkimap.checkimap()
+	t = checkimap.checkimap(config.get('general', 'host_port'), director)
 	t.start()
 	threads.append(t)
 	while len(threads) > 0:

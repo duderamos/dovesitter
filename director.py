@@ -2,7 +2,7 @@ import socket
 import logging
 
 class director:
-	def __init__(self, server='/var/run/dovecot-proxy/director-admin'):
+	def __init__(self, server):
 		self.server = server
 		self.sock = None
 		self.proxies = {}
@@ -41,7 +41,6 @@ class director:
 		if not self.director_connect():
 			return False
 		self.sock.sendall("HOST-SET\t" + host + "\t100\n");
-		self.sock.sendall("HOST-FLUSH\t" + host + "\n");
 		self.proxies[host] = '100'
 		self.logger.info('Host %s enabled', host)
 		self.sock.close()
