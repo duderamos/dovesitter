@@ -2,9 +2,9 @@ import socket
 import logging
 
 class director:
-	def __init__(self, server):
-		self.server = server
-		self.sock = None
+    def __init__(self, server):
+        self.server = server
+        self.sock = None
 		self.proxies = {}
 		self.logger = logging.getLogger('dovesitter')
 
@@ -55,3 +55,36 @@ class director:
 		self.logger.info('Host %s disabled', host)
 		self.sock.close()
 		return True
+
+    def director_getlist(self):
+        if not self.director_connect():
+            return False
+        self.sock.sendall("DIRECTOR-LIST\n")
+        for line in self.sock.makefile('r'):
+            if line == '\n':
+                break
+            print line
+        self.sock.close()
+        return True
+
+    def director_add(self, host):
+        if not self.director_connect():
+            return False
+        self.sock.sendall("DIRECTOR-ADD\t" + host + "\n");
+        if self.sock.recv(2) == 'OK':
+            self.sock.close()
+            return True
+        else:
+            self.sock.close()
+            return False
+
+    def director_remove(self, host):
+        if not self.director_connect():
+            return False
+        self.sock.sendall("DIRECTOR-REMOVE\t" + host + "\n");
+        if  self.sock.recv(2) == 'OK':
+            self.sock.close()
+            return True
+        else:
+            self.sock.close()
+            return False
