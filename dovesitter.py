@@ -106,7 +106,7 @@ if __name__ == '__main__':
     logger.info('Starting dovesitter main thread')
     director = director.director(config.get('general', 'director_socket'))
     threads = []
-    t = checkimap.checkimap(config.get('general', 'host_port'), director)
+    t = checkimap.checkimap(config.get('general', 'imap_port'), director)
     t.start()
     threads.append(t)
     while len(threads) > 0:
