@@ -5,6 +5,19 @@ It tests IMAP backend servers and enable/disable servers as needed.
 
 In order to test, it sends a TCP/SYN package to IMAP port and waits for a TCP/SYN+ACK response.
 
+## Configure and run
+
+* Create the directory **/opt/dovesitter**
+* Copy all \*.py to **/opt/dovesitter**
+* Create the directory **/etc/dovesitter**
+* Copy all \*.conf to **/etc/dovesitter**
+
+If you use RHEL/CentOS 7.x or another distro with systemd:
+
+* Copy **dovesitter.service** to **/etc/systemd/system/**
+* Reload systemd with **systemctl daemon-reload**
+* Enable and run **dovesitter** with **systemctl enable dovesitter.service && systemctl start dovesitter.service**
+
 ## Licence
 
 Copyright (c) 2015 Eduardo Ramos (ramos.eduardo87@gmail.com)

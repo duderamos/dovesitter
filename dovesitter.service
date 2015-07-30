@@ -1,0 +1,11 @@
+[Unit]
+Description=Dovesitter
+Requires=dovecot.service
+
+[Service]
+Type=simple
+ExecStart=/opt/dovesitter/dovesitter.py
+Nice=5
+
+[Install]
+WantedBy=multi-user.target
